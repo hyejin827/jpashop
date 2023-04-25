@@ -1,6 +1,8 @@
 package jpabook.jpashop.controller;
 
+import com.querydsl.core.Tuple;
 import jpabook.jpashop.domain.Order;
+import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.domain.repository.OrderSearch;
 import jpabook.jpashop.dto.request.OrderRequestDto;
 import jpabook.jpashop.service.OrderService;
@@ -20,7 +22,12 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping("/list")
-    public List<Order> list(@RequestBody OrderSearch orderSearch) {
+    public List<Order> list(@RequestParam(value = "memberName") String memberName,
+                            @RequestParam(value = "orderStatus") OrderStatus orderStatus) {
+        OrderSearch orderSearch = OrderSearch.builder()
+                                    .memberName(memberName)
+                                    .orderStatus(orderStatus)
+                                    .build();
         List<Order> orderList = orderService.findOrders(orderSearch);
         return orderList;
     }

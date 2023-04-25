@@ -21,7 +21,6 @@ public class Member {
 
     // 수정하지않아야함
     // ArrayList에서 hibernate 의 타입인 persistBag? 으로 바뀜
-    @JsonIgnore
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
 
