@@ -2,10 +2,12 @@ package jpabook.jpashop.service;
 
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.repository.MemberRepository;
+import jpabook.jpashop.dto.response.MemberResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -48,8 +50,16 @@ public class MemberService {
     /*
     * 회원전체조회
     */
-    public List<Member> findMembers() {
-        return memberRepository.findAll();
+    public List<MemberResponseDto> findMembers() {
+        List<Member> memberList = memberRepository.findAll();
+        List<MemberResponseDto> memberResList = new ArrayList<MemberResponseDto>();
+
+        memberList.forEach(member -> {
+            MemberResponseDto mbr = new MemberResponseDto(member);
+            memberResList.add(mbr);
+        });
+
+        return memberResList;
     }
 
     public Member findOne(Long memberId) {

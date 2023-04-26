@@ -10,10 +10,12 @@ import jpabook.jpashop.domain.repository.ItemRepository;
 import jpabook.jpashop.domain.repository.MemberRepository;
 import jpabook.jpashop.domain.repository.OrderRepository;
 import jpabook.jpashop.domain.repository.OrderSearch;
+import jpabook.jpashop.dto.response.OrderResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -55,7 +57,15 @@ public class OrderService {
     }
 
     /*검색*/
-    public List<Order> findOrders(OrderSearch orderSearch) {
-        return orderRepository.findAll(orderSearch);
+    public List<OrderResponseDto> findOrders(OrderSearch orderSearch) {
+        List<OrderResponseDto> orderResList = new ArrayList<OrderResponseDto>();
+        List<Order> orderList = orderRepository.findAll(orderSearch);
+
+        orderList.forEach(order -> {
+            OrderResponseDto od = new OrderResponseDto(order);
+            orderResList.add(od);
+        });
+
+        return orderResList;
     }
 }

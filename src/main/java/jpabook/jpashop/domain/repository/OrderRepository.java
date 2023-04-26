@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.QMember;
 import jpabook.jpashop.domain.QOrder;
+import jpabook.jpashop.dto.response.OrderResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -32,14 +33,14 @@ public class OrderRepository {
         JPAQueryFactory query = new JPAQueryFactory(em);
         QMember qMember = QMember.member;
         QOrder qOrder = QOrder.order;
-        List<Order> orderList = query
-                                .selectFrom(qOrder)
-                                .join(qOrder.member, qMember)
+
+        return query
+                .selectFrom(qOrder)
+                .join(qOrder.member, qMember)
 //                                .on(qOrder.member.id.eq(qMember.id))
-                                .where(StringUtils.isEmpty(orderSearch.getMemberName()) ? null : qMember.name.eq(orderSearch.getMemberName())
-                                        , qOrder.status.eq(orderSearch.getOrderStatus()))
-                                .fetch();
-        return orderList;
+                .where(StringUtils.isEmpty(orderSearch.getMemberName()) ? null : qMember.name.eq(orderSearch.getMemberName())
+                        , qOrder.status.eq(orderSearch.getOrderStatus()))
+                .fetch();
     }
 
     public List<Order> findAll2(OrderSearch orderSearch) {
