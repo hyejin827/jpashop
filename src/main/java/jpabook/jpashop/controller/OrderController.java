@@ -23,8 +23,8 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping("/list")
-    public List<OrderResponseDto> list(@RequestParam(value = "memberName") String memberName,
-                                       @RequestParam(value = "orderStatus") OrderStatus orderStatus) {
+    public List<OrderResponseDto> list(@RequestParam(value = "memberName", required = false) String memberName,
+                                       @RequestParam(value = "orderStatus", required = false) OrderStatus orderStatus) {
         OrderSearch orderSearch = OrderSearch.builder()
                                     .memberName(memberName)
                                     .orderStatus(orderStatus)
@@ -34,7 +34,13 @@ public class OrderController {
 
     @PostMapping("/new")
     public String create(@RequestBody OrderRequestDto orderRequestDto) {
-        orderService.order(orderRequestDto.getMemberId(), orderRequestDto.getItemId(), orderRequestDto.getOrderCnt());
+        Long id = orderService.order(orderRequestDto.getMemberId(), orderRequestDto.getItemId(), orderRequestDto.getOrderCnt());
+        return "success";
+    }
+
+    @PostMapping("/cancel/{orderId}")
+    public String cancel(@PathVariable("orderId") Long orderId) {
+        orderService.cancelOrder(orderId);
         return "success";
     }
 }

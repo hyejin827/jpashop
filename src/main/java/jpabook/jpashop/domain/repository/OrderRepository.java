@@ -2,16 +2,18 @@ package jpabook.jpashop.domain.repository;
 
 import javax.persistence.EntityManager;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jpabook.jpashop.domain.Order;
+import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.domain.QMember;
 import jpabook.jpashop.domain.QOrder;
 import jpabook.jpashop.dto.response.OrderResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.thymeleaf.util.ObjectUtils;
 
 import java.util.List;
 
@@ -20,6 +22,9 @@ import java.util.List;
 @Slf4j
 public class OrderRepository {
     private final EntityManager em;
+
+    private final QMember qMember = QMember.member;
+    private final QOrder qOrder = QOrder.order;
 
     public void save(Order order) {
         em.persist(order);
@@ -31,16 +36,28 @@ public class OrderRepository {
 
     public List<Order> findAll(OrderSearch orderSearch) {
         JPAQueryFactory query = new JPAQueryFactory(em);
-        QMember qMember = QMember.member;
-        QOrder qOrder = QOrder.order;
 
         return query
                 .selectFrom(qOrder)
                 .join(qOrder.member, qMember)
 //                                .on(qOrder.member.id.eq(qMember.id))
-                .where(StringUtils.isEmpty(orderSearch.getMemberName()) ? null : qMember.name.eq(orderSearch.getMemberName())
-                        , qOrder.status.eq(orderSearch.getOrderStatus()))
+                .where(emptyName(orderSearch.getMemberName())
+                        ,emptyStatus(orderSearch.getOrderStatus()))
                 .fetch();
+    }
+
+    private BooleanExpression emptyName(String memberName) {
+        if (StringUtils.isEmpty(memberName)) {
+            return null;
+        }
+        return qMember.name.eq(memberName);
+    }
+
+    private BooleanExpression emptyStatus(OrderStatus orderStatus) {
+        if (ObjectUtils.isEmpty(orderStatus)) {
+            return null;
+        }
+        return qOrder.status.eq(orderStatus);
     }
 
     public List<Order> findAll2(OrderSearch orderSearch) {
